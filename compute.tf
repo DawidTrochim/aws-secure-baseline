@@ -68,6 +68,9 @@ resource "aws_instance" "app" {
   vpc_security_group_ids = [aws_security_group.ec2.id]
   iam_instance_profile   = aws_iam_instance_profile.ec2_ssm.name
 
+  # t3 instances are EBS optimized anyway at no extra cost, this just makes it explicit.
+  ebs_optimized = true
+
   # Force IMDSv2. v1 answers any plain GET request, so an SSRF bug in an app on the box
   # could be used to steal the role's credentials. v2 needs a session token first.
   metadata_options {
