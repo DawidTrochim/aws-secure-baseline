@@ -151,6 +151,7 @@ resource "aws_s3_bucket_policy" "cloudtrail" {
 # CloudTrail records API calls made in the account (who did what, when, from where).
 # Single region to keep this project small.
 resource "aws_cloudtrail" "main" {
+  #checkov:skip=CKV_AWS_67:Single-region on purpose to keep this project small. The account already has a separate multi-region trail that covers all regions.
   #checkov:skip=CKV_AWS_35:Logs are encrypted with SSE-S3 (bucket default). A customer managed KMS key costs about $1/month plus API calls and needs a key policy for CloudTrail - planned as a next step, not needed for a lab.
   name                          = "secure-baseline-trail"
   s3_bucket_name                = aws_s3_bucket.cloudtrail.id
