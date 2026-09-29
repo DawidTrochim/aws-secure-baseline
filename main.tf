@@ -24,3 +24,13 @@ resource "aws_budgets_budget" "monthly" {
     subscriber_email_addresses = [var.budget_alert_email]
   }
 }
+
+# GuardDuty is AWS's threat detection service. It reads CloudTrail, VPC flow logs and
+# DNS logs in the background and raises findings for things like crypto mining,
+# logins from unusual places or an instance talking to a known bad IP.
+# My account is on the AWS Free plan, which doesn't allow GuardDuty, so it is off by
+# default. Set enable_guardduty = true once the account is on a paid plan.
+resource "aws_guardduty_detector" "main" {
+  count  = var.enable_guardduty ? 1 : 0
+  enable = true
+}
