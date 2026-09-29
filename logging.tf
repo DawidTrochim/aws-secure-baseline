@@ -69,6 +69,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "cloudtrail" {
 
 # Bucket policy that allows the CloudTrail service to write logs into the bucket,
 # but only for my trail (the SourceArn condition), and lets VPC flow logs write too.
+# It also blocks any access that isn't over HTTPS.
 resource "aws_s3_bucket_policy" "cloudtrail" {
   bucket = aws_s3_bucket.cloudtrail.id
 
@@ -123,6 +124,22 @@ resource "aws_s3_bucket_policy" "cloudtrail" {
           StringEquals = {
             "s3:x-amz-acl"      = "bucket-owner-full-control"
             "aws:SourceAccount" = data.aws_caller_identity.current.account_id
+          }
+        }
+      },
+      # refuse any request that isn't over HTTPS
+      {
+        Sid       = "DenyInsecureTransport"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:*"
+        Resource = [
+          aws_s3_bucket.cloudtrail.arn,
+          "${aws_s3_bucket.cloudtrail.arn}/*"
+        ]
+        Condition = {
+          Bool = {
+            "aws:SecureTransport" = "false"
           }
         }
       }
