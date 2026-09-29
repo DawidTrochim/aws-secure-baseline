@@ -1,0 +1,14 @@
+# VPC flow logs are active and delivering to S3
+# Captured 2026-09-29 09:26 UTC. Account ID replaced with <ACCOUNT_ID>.
+
+$ aws ec2 describe-flow-logs --profile portfolio --filter Name=resource-id,Values=vpc-04748caa462fa294c --query FlowLogs[].{Id:FlowLogId,TrafficType:TrafficType,Status:FlowLogStatus,DeliverStatus:DeliverLogsStatus,Destination:LogDestination}
+[
+    {
+        "Id": "fl-0bdfd21516bdb39bb",
+        "TrafficType": "ALL",
+        "Status": "ACTIVE",
+        "DeliverStatus": "SUCCESS",
+        "Destination": "arn:aws:s3:::secure-baseline-cloudtrail-<ACCOUNT_ID>/vpc-flow-logs/"
+    }
+]
+

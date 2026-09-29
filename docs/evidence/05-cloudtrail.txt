@@ -1,0 +1,53 @@
+# CloudTrail is logging and delivering to S3
+# Captured 2026-09-29 09:26 UTC. Account ID replaced with <ACCOUNT_ID>.
+
+$ aws cloudtrail describe-trails --profile portfolio --trail-name-list secure-baseline-trail --query trailList[].{Name:Name,S3Bucket:S3BucketName,MultiRegion:IsMultiRegionTrail,LogFileValidation:LogFileValidationEnabled,GlobalEvents:IncludeGlobalServiceEvents}
+[
+    {
+        "Name": "secure-baseline-trail",
+        "S3Bucket": "secure-baseline-cloudtrail-<ACCOUNT_ID>",
+        "MultiRegion": false,
+        "LogFileValidation": true,
+        "GlobalEvents": true
+    }
+]
+
+$ aws cloudtrail get-trail-status --profile portfolio --name secure-baseline-trail --query {IsLogging:IsLogging,LatestDeliveryTime:LatestDeliveryTime,LatestDeliveryError:LatestDeliveryError}
+{
+    "IsLogging": true,
+    "LatestDeliveryTime": "2026-09-29T10:24:22.056000+01:00",
+    "LatestDeliveryError": null
+}
+
+$ aws s3 ls s3://secure-baseline-cloudtrail-<ACCOUNT_ID>/AWSLogs/<ACCOUNT_ID>/CloudTrail/ --recursive --profile portfolio
+2026-09-29 10:21:39          0 AWSLogs/<ACCOUNT_ID>/CloudTrail/
+2026-09-29 10:24:23      24850 AWSLogs/<ACCOUNT_ID>/CloudTrail/eu-west-2/2026/09/29/<ACCOUNT_ID>_CloudTrail_eu-west-2_20260929T0925Z_ipMWMIDmFFMozKT9.json.gz
+
+# My Session Manager login from 03-session-manager.txt, found in the log files the trail delivered to S3.
+# (downloaded with 'aws s3 sync' and searched for eventName = StartSession; tokens, stream URL and my IP removed)
+# from <ACCOUNT_ID>_CloudTrail_eu-west-2_20260929T0930Z_pXSVmSYLyNCZwass.json.gz
+{
+  "eventTime": "2026-09-29T09:25:07Z",
+  "eventSource": "ssm.amazonaws.com",
+  "eventName": "StartSession",
+  "awsRegion": "eu-west-2",
+  "userIdentity": {
+    "type": "IAMUser",
+    "arn": "arn:aws:iam::<ACCOUNT_ID>:user/dawid-admin",
+    "accountId": "<ACCOUNT_ID>",
+    "userName": "dawid-admin"
+  },
+  "requestParameters": {
+    "target": "i-09920c525818b3011",
+    "documentName": "AWS-StartNonInteractiveCommand",
+    "parameters": {
+      "command": [
+        "sh -c 'echo \"user: $(whoami)\"; echo \"host: $(hostname)\"; grep PRETTY_NAME /etc/os-release; echo \"IMDSv1 request (no token) HTTP status: $(curl -s -o /dev/null -w %{http_code} http://169.254.169.254/latest/meta-data/)\"; T=$(curl -s -X PUT http://169.254.169.254/latest/api/token -H \"X-aws-ec2-metadata-token-ttl-seconds: 60\"); echo \"IMDSv2 request (with token) HTTP status: $(curl -s -o /dev/null -w %{http_code} -H \"X-aws-ec2-metadata-token: $T\" http://169.254.169.254/latest/meta-data/)\"'"
+      ]
+    }
+  },
+  "sourceIPAddress": "<my IP>",
+  "responseElements": {
+    "sessionId": "dawid-admin-4pevjzq4a4lk9dg2yxvqrsfkgy"
+  }
+}

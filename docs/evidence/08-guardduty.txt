@@ -1,0 +1,16 @@
+# GuardDuty
+# Captured 2026-09-29 09:26 UTC. Account ID replaced with <ACCOUNT_ID>.
+
+# GuardDuty is not enabled. This account is on the AWS Free plan, which doesn't include GuardDuty.
+# The resource is in main.tf behind enable_guardduty (default false). The API call shows why:
+
+$ aws guardduty list-detectors --profile portfolio
+
+aws: [ERROR]: An error occurred (SubscriptionRequiredException) when calling the ListDetectors operation: The AWS Access Key Id needs a subscription for the service
+
+$ aws freetier get-account-plan-state --profile portfolio --region us-east-1 --query {accountPlanType:accountPlanType,accountPlanStatus:accountPlanStatus}
+{
+    "accountPlanType": "FREE",
+    "accountPlanStatus": "ACTIVE"
+}
+

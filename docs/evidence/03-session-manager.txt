@@ -1,0 +1,26 @@
+# Session Manager: connecting to the instance with no SSH key and no inbound ports
+# Captured 2026-09-29 09:25 UTC. Account ID replaced with <ACCOUNT_ID>.
+
+$ aws ssm describe-instance-information --profile portfolio --filters Key=InstanceIds,Values=i-09920c525818b3011 --query InstanceInformationList[].{InstanceId:InstanceId,PingStatus:PingStatus,AgentVersion:AgentVersion,Platform:PlatformName}
+[
+    {
+        "InstanceId": "i-09920c525818b3011",
+        "PingStatus": "Online",
+        "AgentVersion": "3.3.5390.0",
+        "Platform": "Amazon Linux"
+    }
+]
+
+# Ran a few commands on the box through Session Manager. The IMDS checks show v1 (no token) is refused and v2 works.
+$ aws ssm start-session --profile portfolio --target i-09920c525818b3011 --document-name AWS-StartNonInteractiveCommand --parameters file://params.json
+
+Starting session with SessionId: dawid-admin-4pevjzq4a4lk9dg2yxvqrsfkgy
+user: ssm-user
+host: ip-10-0-1-221.eu-west-2.compute.internal
+PRETTY_NAME="Amazon Linux 2023.12.20260928"
+IMDSv1 request (no token) HTTP status: 401
+IMDSv2 request (with token) HTTP status: 200
+
+
+Exiting session with sessionId: dawid-admin-4pevjzq4a4lk9dg2yxvqrsfkgy.
+
