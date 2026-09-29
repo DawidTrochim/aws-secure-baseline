@@ -1,0 +1,64 @@
+# Instance settings: IMDSv2 required, encrypted root volume, no key pair, no inbound rules
+# Captured 2026-09-29 09:25 UTC. Account ID replaced with <ACCOUNT_ID>.
+
+$ aws ec2 describe-instances --profile portfolio --instance-ids i-09920c525818b3011 --query Reservations[].Instances[].{InstanceType:InstanceType,KeyName:KeyName,MetadataHttpTokens:MetadataOptions.HttpTokens,HopLimit:MetadataOptions.HttpPutResponseHopLimit,IamProfile:IamInstanceProfile.Arn}
+[
+    {
+        "InstanceType": "t3.micro",
+        "KeyName": null,
+        "MetadataHttpTokens": "required",
+        "HopLimit": 1,
+        "IamProfile": "arn:aws:iam::<ACCOUNT_ID>:instance-profile/secure-baseline-ec2-ssm-profile"
+    }
+]
+
+$ aws ec2 describe-instance-credit-specifications --profile portfolio --instance-ids i-09920c525818b3011
+{
+    "InstanceCreditSpecifications": [
+        {
+            "InstanceId": "i-09920c525818b3011",
+            "CpuCredits": "standard"
+        }
+    ]
+}
+
+$ aws ec2 describe-volumes --profile portfolio --filters Name=attachment.instance-id,Values=i-09920c525818b3011 --query Volumes[].{VolumeId:VolumeId,Encrypted:Encrypted,KmsKeyId:KmsKeyId,Type:VolumeType,SizeGiB:Size}
+[
+    {
+        "VolumeId": "vol-03f6fa57aab50ffab",
+        "Encrypted": true,
+        "KmsKeyId": "arn:aws:kms:eu-west-2:<ACCOUNT_ID>:key/fc17f47d-34dd-450b-813f-43d7e6bff9b0",
+        "Type": "gp3",
+        "SizeGiB": 8
+    }
+]
+
+$ aws ec2 describe-security-groups --profile portfolio --filters Name=vpc-id,Values=vpc-04748caa462fa294c --query SecurityGroups[].{Name:GroupName,Inbound:IpPermissions,Outbound:IpPermissionsEgress}
+[
+    {
+        "Name": "secure-baseline-ec2-sg",
+        "Inbound": [],
+        "Outbound": [
+            {
+                "IpProtocol": "tcp",
+                "FromPort": 443,
+                "ToPort": 443,
+                "UserIdGroupPairs": [],
+                "IpRanges": [
+                    {
+                        "Description": "HTTPS out to SSM endpoints and package repos",
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ],
+                "Ipv6Ranges": [],
+                "PrefixListIds": []
+            }
+        ]
+    },
+    {
+        "Name": "default",
+        "Inbound": [],
+        "Outbound": []
+    }
+]
+

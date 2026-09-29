@@ -1,0 +1,54 @@
+# S3 log bucket: public access blocked, versioning on, default encryption, TLS-only policy
+# Captured 2026-09-29 09:26 UTC. Account ID replaced with <ACCOUNT_ID>.
+
+$ aws s3api get-public-access-block --profile portfolio --bucket secure-baseline-cloudtrail-<ACCOUNT_ID>
+{
+    "PublicAccessBlockConfiguration": {
+        "BlockPublicAcls": true,
+        "IgnorePublicAcls": true,
+        "BlockPublicPolicy": true,
+        "RestrictPublicBuckets": true
+    }
+}
+
+$ aws s3api get-bucket-versioning --profile portfolio --bucket secure-baseline-cloudtrail-<ACCOUNT_ID>
+{
+    "Status": "Enabled"
+}
+
+$ aws s3api get-bucket-encryption --profile portfolio --bucket secure-baseline-cloudtrail-<ACCOUNT_ID>
+{
+    "ServerSideEncryptionConfiguration": {
+        "Rules": [
+            {
+                "ApplyServerSideEncryptionByDefault": {
+                    "SSEAlgorithm": "AES256"
+                },
+                "BucketKeyEnabled": false,
+                "BlockedEncryptionTypes": {
+                    "EncryptionType": [
+                        "SSE-C"
+                    ]
+                }
+            }
+        ]
+    }
+}
+
+$ aws s3api get-bucket-policy-status --profile portfolio --bucket secure-baseline-cloudtrail-<ACCOUNT_ID>
+{
+    "PolicyStatus": {
+        "IsPublic": false
+    }
+}
+
+# Same signed request as my admin user, once over HTTPS and once over plain HTTP.
+# HTTPS works, HTTP gets an explicit deny from the bucket policy (aws:SecureTransport = false).
+$ aws s3 ls s3://secure-baseline-cloudtrail-<ACCOUNT_ID>/ --profile portfolio --endpoint-url https://s3.eu-west-2.amazonaws.com
+                           PRE AWSLogs/
+                           PRE vpc-flow-logs/
+
+$ aws s3 ls s3://secure-baseline-cloudtrail-<ACCOUNT_ID>/ --profile portfolio --endpoint-url http://s3.eu-west-2.amazonaws.com
+
+aws: [ERROR]: An error occurred (AccessDenied) when calling the ListObjectsV2 operation: User: arn:aws:iam::<ACCOUNT_ID>:user/dawid-admin is not authorized to perform: s3:ListBucket on resource: "arn:aws:s3:::secure-baseline-cloudtrail-<ACCOUNT_ID>" with an explicit deny in a resource-based policy
+

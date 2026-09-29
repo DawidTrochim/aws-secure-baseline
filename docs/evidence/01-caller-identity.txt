@@ -1,0 +1,10 @@
+# Checking which identity Terraform runs as (IAM user, not root)
+# Captured 2026-09-29 09:25 UTC. Account ID replaced with <ACCOUNT_ID>.
+
+$ aws sts get-caller-identity --profile portfolio
+{
+    "UserId": "AIDA3MCVMD3WRXJ7FANSC",
+    "Account": "<ACCOUNT_ID>",
+    "Arn": "arn:aws:iam::<ACCOUNT_ID>:user/dawid-admin"
+}
+

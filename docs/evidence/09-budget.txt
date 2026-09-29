@@ -1,0 +1,31 @@
+# Budget with email alerts
+# Captured 2026-09-29 09:26 UTC. Account ID replaced with <ACCOUNT_ID>.
+
+$ aws budgets describe-budget --profile portfolio --account-id <ACCOUNT_ID> --budget-name aws-secure-baseline-monthly --query Budget.{Name:BudgetName,Limit:BudgetLimit,TimeUnit:TimeUnit}
+{
+    "Name": "aws-secure-baseline-monthly",
+    "Limit": {
+        "Amount": "10.0",
+        "Unit": "USD"
+    },
+    "TimeUnit": "MONTHLY"
+}
+
+$ aws budgets describe-notifications-for-budget --profile portfolio --account-id <ACCOUNT_ID> --budget-name aws-secure-baseline-monthly
+{
+    "Notifications": [
+        {
+            "NotificationType": "ACTUAL",
+            "ComparisonOperator": "GREATER_THAN",
+            "Threshold": 80.0,
+            "NotificationState": "OK"
+        },
+        {
+            "NotificationType": "FORECASTED",
+            "ComparisonOperator": "GREATER_THAN",
+            "Threshold": 100.0,
+            "NotificationState": "OK"
+        }
+    ]
+}
+
