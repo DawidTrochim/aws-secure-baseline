@@ -40,16 +40,18 @@ resource "aws_iam_instance_profile" "ec2_ssm" {
 }
 
 # Security group with no inbound rules at all - nothing on the internet can connect in.
-# Outbound is allowed so the SSM agent can reach AWS.
+# Outbound is limited to HTTPS, which is all the SSM agent and dnf updates need.
+# (DNS to the VPC resolver isn't filtered by security groups, so it still works.)
 resource "aws_security_group" "ec2" {
   name        = "secure-baseline-ec2-sg"
-  description = "No inbound access. Outbound only, for SSM."
+  description = "No inbound access. Outbound HTTPS only, for SSM and updates."
   vpc_id      = aws_vpc.main.id
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    description = "HTTPS out to SSM endpoints and package repos"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
