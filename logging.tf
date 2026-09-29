@@ -84,6 +84,10 @@ resource "aws_cloudtrail" "main" {
   include_global_service_events = true
   is_multi_region_trail         = false
 
+  # CloudTrail writes a signed digest file every hour, so I can prove later that
+  # nobody edited or deleted log files after they were delivered.
+  enable_log_file_validation = true
+
   # the bucket policy has to exist before CloudTrail checks it can write to the bucket
   depends_on = [aws_s3_bucket_policy.cloudtrail]
 }
