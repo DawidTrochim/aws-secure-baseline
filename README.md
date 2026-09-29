@@ -141,7 +141,7 @@ My own mapping against CIS AWS Foundations Benchmark v3.0.0. I've tried to be ho
 | CIS ID | Control | Status | How / evidence |
 |---|---|---|---|
 | 1.7 | Don't use the root user for day to day tasks | Met | Terraform runs as an IAM user ([01](docs/evidence/01-caller-identity.txt)) |
-| 1.10 | MFA for IAM users with console access | **Not yet** | My IAM user doesn't have MFA yet - CloudTrail shows `mfaAuthenticated: false`. Next step. |
+| 1.10 | MFA for IAM users with console access | Met | MFA device on my IAM user, credential report shows `mfa_active = true` ([10](docs/evidence/10-iam-mfa.txt)). I added it after the first deploy, so the CloudTrail event in [05](docs/evidence/05-cloudtrail.txt) still shows `mfaAuthenticated: false`. |
 | 2.1.1 | S3 bucket policy denies HTTP requests | Met | `DenyInsecureTransport` statement ([07](docs/evidence/07-s3-bucket.txt)) |
 | 2.1.4 | S3 Block Public Access | Met | All four settings on ([07](docs/evidence/07-s3-bucket.txt)) |
 | 2.2.1 | EBS encryption | Partial | Root volume is encrypted, but I haven't turned on account-level EBS default encryption ([04](docs/evidence/04-instance-hardening.txt)) |
@@ -166,6 +166,7 @@ After `terraform apply` I checked everything actually worked and saved the outpu
 - [07-s3-bucket.txt](docs/evidence/07-s3-bucket.txt) - public access block, versioning, encryption, HTTP request denied
 - [08-guardduty.txt](docs/evidence/08-guardduty.txt) - why GuardDuty isn't on
 - [09-budget.txt](docs/evidence/09-budget.txt) - budget and alert thresholds
+- [10-iam-mfa.txt](docs/evidence/10-iam-mfa.txt) - MFA on my IAM user (added after the first deploy)
 
 ## What I learned
 
@@ -212,7 +213,7 @@ aws s3 ls --profile portfolio | grep secure-baseline
 ## Next steps
 
 - Make the budget ignore credits (`include_credit = false`) so the alert tracks real spend
-- Add MFA to my IAM user, and move to IAM Identity Center instead of IAM users
+- Move to IAM Identity Center instead of IAM users
 - Customer managed KMS key for the bucket and CloudTrail
 - Multi-region trail, send it to CloudWatch Logs and add the CIS section 4 metric filters and alarms (root login, console login without MFA, IAM policy changes, etc.)
 - Turn on GuardDuty once the account is on a paid plan
