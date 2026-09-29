@@ -5,6 +5,7 @@ data "aws_caller_identity" "current" {}
 # force_destroy lets "terraform destroy" delete it even when it has logs in it.
 # That is fine for a lab - in a real account I would not want this.
 resource "aws_s3_bucket" "cloudtrail" {
+  #checkov:skip=CKV_AWS_145:Bucket uses SSE-S3 (AES256) default encryption. A customer managed KMS key adds cost and key policy work - planned as a next step.
   bucket        = "secure-baseline-cloudtrail-${data.aws_caller_identity.current.account_id}"
   force_destroy = true
 }
@@ -150,6 +151,7 @@ resource "aws_s3_bucket_policy" "cloudtrail" {
 # CloudTrail records API calls made in the account (who did what, when, from where).
 # Single region to keep this project small.
 resource "aws_cloudtrail" "main" {
+  #checkov:skip=CKV_AWS_35:Logs are encrypted with SSE-S3 (bucket default). A customer managed KMS key costs about $1/month plus API calls and needs a key policy for CloudTrail - planned as a next step, not needed for a lab.
   name                          = "secure-baseline-trail"
   s3_bucket_name                = aws_s3_bucket.cloudtrail.id
   include_global_service_events = true
