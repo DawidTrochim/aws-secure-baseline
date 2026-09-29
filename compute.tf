@@ -72,6 +72,12 @@ resource "aws_instance" "app" {
   # t3 instances are EBS optimized anyway at no extra cost, this just makes it explicit.
   ebs_optimized = true
 
+  # t3 defaults to "unlimited" CPU credits, which can add charges if the CPU stays busy.
+  # "standard" just slows the instance down instead of billing me.
+  credit_specification {
+    cpu_credits = "standard"
+  }
+
   # Force IMDSv2. v1 answers any plain GET request, so an SSRF bug in an app on the box
   # could be used to steal the role's credentials. v2 needs a session token first.
   metadata_options {
