@@ -60,3 +60,20 @@ resource "aws_default_security_group" "default" {
     Name = "secure-baseline-default-sg-locked"
   }
 }
+
+# VPC flow logs record every connection attempt in and out of the VPC (source, destination,
+# port, accepted or rejected). They go to the same S3 bucket as CloudTrail, under their own
+# folder. Sending to S3 is much cheaper than CloudWatch Logs.
+resource "aws_flow_log" "main" {
+  vpc_id               = aws_vpc.main.id
+  traffic_type         = "ALL"
+  log_destination_type = "s3"
+  log_destination      = "${aws_s3_bucket.cloudtrail.arn}/vpc-flow-logs/"
+
+  # the bucket policy needs to allow log delivery first
+  depends_on = [aws_s3_bucket_policy.cloudtrail]
+
+  tags = {
+    Name = "secure-baseline-flow-logs"
+  }
+}
