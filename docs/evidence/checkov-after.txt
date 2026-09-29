@@ -1,0 +1,8 @@
+# Checkov output from the PR run after fixes
+# GitHub Actions run: https://github.com/DawidTrochim/aws-secure-baseline/actions/runs/36547641598
+
+terraform scan results:
+
+Passed checks: 41, Failed checks: 0, Skipped checks: 11
+
+
