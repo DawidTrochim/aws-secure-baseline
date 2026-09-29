@@ -12,6 +12,7 @@ resource "aws_vpc" "main" {
 # One public subnet. The instance needs a public IP to reach the SSM service
 # because I'm not paying for a NAT gateway or VPC endpoints.
 resource "aws_subnet" "public" {
+  #checkov:skip=CKV_AWS_130:The instance needs a public IP to reach the SSM endpoints because there is no NAT gateway or VPC endpoint (cost). The security group has no inbound rules so nothing can connect in.
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.1.0/24"
   availability_zone       = "${var.aws_region}a"
