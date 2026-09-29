@@ -27,6 +27,18 @@ resource "aws_s3_bucket_versioning" "cloudtrail" {
   }
 }
 
+# Encrypt everything in the bucket by default. SSE-S3 (AES256) uses keys that AWS manages
+# for me, so there is no extra cost. S3 does this by default now, but I want it written down.
+resource "aws_s3_bucket_server_side_encryption_configuration" "cloudtrail" {
+  bucket = aws_s3_bucket.cloudtrail.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
 # Bucket policy that allows the CloudTrail service to write logs into the bucket,
 # but only for my trail (the SourceArn condition).
 resource "aws_s3_bucket_policy" "cloudtrail" {
