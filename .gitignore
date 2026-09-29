@@ -1,0 +1,14 @@
+# Terraform working files
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.tfplan
+tfplan
+
+# My real values (email etc.) - see terraform.tfvars.example
+terraform.tfvars
+
+# Personal notes, not for the repo
+STUDY_NOTES.md
