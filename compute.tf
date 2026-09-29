@@ -62,6 +62,7 @@ resource "aws_security_group" "ec2" {
 
 # The EC2 instance. No key pair, so there is no SSH key to lose - I connect with Session Manager.
 resource "aws_instance" "app" {
+  #checkov:skip=CKV_AWS_126:Detailed (1-minute) monitoring costs extra per metric. Basic 5-minute monitoring is enough for a test instance.
   ami                    = data.aws_ami.al2023.id
   instance_type          = "t3.micro"
   subnet_id              = aws_subnet.public.id
