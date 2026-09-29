@@ -9,3 +9,14 @@ variable "aws_profile" {
   type        = string
   default     = "portfolio"
 }
+
+variable "budget_alert_email" {
+  description = "Email address that gets the budget alert. Set this in terraform.tfvars (not committed)"
+  type        = string
+}
+
+variable "budget_limit_usd" {
+  description = "Monthly budget in USD"
+  type        = string
+  default     = "10"
+}

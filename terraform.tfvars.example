@@ -1,0 +1,3 @@
+# Copy this to terraform.tfvars and put your own values in.
+# terraform.tfvars is in .gitignore so your email doesn't end up on GitHub.
+budget_alert_email = "you@example.com"
