@@ -1,0 +1,21 @@
+# MFA on my IAM user (CIS 1.10)
+# Captured 2026-09-29 09:40 UTC. Account ID replaced with <ACCOUNT_ID>.
+# Added after the first deploy - the CloudTrail event in 05 was recorded before this, so it still shows mfaAuthenticated: false.
+
+$ aws iam list-mfa-devices --user-name dawid-admin --profile portfolio
+{
+    "MFADevices": [
+        {
+            "UserName": "dawid-admin",
+            "SerialNumber": "arn:aws:iam::<ACCOUNT_ID>:mfa/Lab-admin-aws-dawid",
+            "EnableDate": "2026-09-29T09:40:04+00:00"
+        }
+    ]
+}
+
+# IAM credential report, only the columns that matter for 1.10, only my IAM user:
+$ aws iam generate-credential-report --profile portfolio
+$ aws iam get-credential-report --profile portfolio --query Content --output text | base64 -d | cut -d, -f1,4,8
+user,password_enabled,mfa_active
+dawid-admin,true,true
+
