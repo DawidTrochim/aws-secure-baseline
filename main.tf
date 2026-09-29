@@ -31,6 +31,7 @@ resource "aws_budgets_budget" "monthly" {
 # My account is on the AWS Free plan, which doesn't allow GuardDuty, so it is off by
 # default. Set enable_guardduty = true once the account is on a paid plan.
 resource "aws_guardduty_detector" "main" {
+  #checkov:skip=CKV2_AWS_3:This is a single standalone account, not part of an AWS Organization, so there is no org-wide GuardDuty setup to configure.
   count  = var.enable_guardduty ? 1 : 0
   enable = true
 }
