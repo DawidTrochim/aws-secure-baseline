@@ -74,6 +74,13 @@ resource "aws_instance" "app" {
     http_put_response_hop_limit = 1
   }
 
+  # Encrypt the root disk. Uses the AWS managed EBS key, which is free.
+  root_block_device {
+    encrypted   = true
+    volume_type = "gp3"
+    volume_size = 8
+  }
+
   tags = {
     Name = "secure-baseline-app"
   }
