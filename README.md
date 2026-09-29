@@ -155,7 +155,7 @@ My own mapping against CIS AWS Foundations Benchmark v3.0.0. I've tried to be ho
 
 ## Evidence
 
-After `terraform apply` I checked everything actually worked and saved the output. The account ID, my email and my IP are replaced.
+After `terraform apply` I checked everything actually worked and saved the output. The account ID, my email and my IP are replaced. There are also [screenshots](#screenshots) from the console further down.
 
 - [01-caller-identity.txt](docs/evidence/01-caller-identity.txt) - running as an IAM user, not root
 - [02-terraform-apply.txt](docs/evidence/02-terraform-apply.txt) - apply output, 20 resources
@@ -167,6 +167,44 @@ After `terraform apply` I checked everything actually worked and saved the outpu
 - [08-guardduty.txt](docs/evidence/08-guardduty.txt) - why GuardDuty isn't on
 - [09-budget.txt](docs/evidence/09-budget.txt) - budget and alert thresholds
 - [10-iam-mfa.txt](docs/evidence/10-iam-mfa.txt) - MFA on my IAM user (added after the first deploy)
+
+## Screenshots
+
+Taken from the console while it was deployed. Account ID, IPs and similar details are covered in red.
+
+**Session Manager** - shell on the instance with no SSH key and no open ports. The last command is a plain IMDSv1 request, which gets `401` because IMDSv2 is required.
+
+![Session Manager session](docs/screenshots/01-session-manager.png)
+
+**Security group** - no inbound rules at all, and one outbound rule for HTTPS.
+
+![Security group with no inbound rules](docs/screenshots/02-sg-no-inbound.png)
+
+![Security group outbound rule, HTTPS only](docs/screenshots/03-sg-outbound-443.png)
+
+**Instance** - IMDSv2 required, the SSM role attached, no key pair.
+
+![EC2 instance details](docs/screenshots/04-instance-details.png)
+
+**CloudTrail** - my trail logging (the other one is the account's existing multi-region trail).
+
+![CloudTrail trails](docs/screenshots/05-cloudtrail-trails.png)
+
+**S3 log bucket** - Block all public access on.
+
+![S3 block public access](docs/screenshots/06-s3-block-public-access.png)
+
+**VPC flow logs** - active, delivering to the log bucket.
+
+![VPC flow logs](docs/screenshots/07-vpc-flow-logs.png)
+
+**Budget** - $10 monthly budget. It shows $0.00 spent because the account's credits cover it (see [Cost](#cost)).
+
+![AWS budget](docs/screenshots/08-budget.png)
+
+**IAM user** - console access enabled with MFA.
+
+![IAM user with MFA](docs/screenshots/09-iam-user-mfa.png)
 
 ## What I learned
 
