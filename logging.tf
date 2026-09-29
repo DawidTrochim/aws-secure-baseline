@@ -27,6 +27,34 @@ resource "aws_s3_bucket_versioning" "cloudtrail" {
   }
 }
 
+# Lifecycle rule so logs don't pile up forever and cost money.
+# Logs are kept for a year, old versions for 90 days after they are replaced.
+resource "aws_s3_bucket_lifecycle_configuration" "cloudtrail" {
+  bucket = aws_s3_bucket.cloudtrail.id
+
+  rule {
+    id     = "expire-old-logs"
+    status = "Enabled"
+
+    filter {}
+
+    expiration {
+      days = 365
+    }
+
+    noncurrent_version_expiration {
+      noncurrent_days = 90
+    }
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+  }
+
+  # lifecycle rules on a versioned bucket should be created after versioning is on
+  depends_on = [aws_s3_bucket_versioning.cloudtrail]
+}
+
 # Encrypt everything in the bucket by default. SSE-S3 (AES256) uses keys that AWS manages
 # for me, so there is no extra cost. S3 does this by default now, but I want it written down.
 resource "aws_s3_bucket_server_side_encryption_configuration" "cloudtrail" {
