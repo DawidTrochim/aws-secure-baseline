@@ -50,3 +50,13 @@ resource "aws_route_table_association" "public" {
   subnet_id      = aws_subnet.public.id
   route_table_id = aws_route_table.public.id
 }
+
+# Every VPC comes with a default security group that allows all traffic between its members.
+# Taking it over in Terraform with no rules removes all of them, so nothing can use it by accident.
+resource "aws_default_security_group" "default" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "secure-baseline-default-sg-locked"
+  }
+}
